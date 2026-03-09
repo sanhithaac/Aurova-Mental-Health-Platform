@@ -53,9 +53,10 @@ const Experts: React.FC<ExpertsProps> = ({ onBack, isLoggedIn, onAuthRequired })
   const [experts, setExperts] = useState<Expert[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedExpertId, setSelectedExpertId] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string>('All');
+  const [activeCategories, setActiveCategories] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'rating' | 'experience' | 'default'>('default');
+  const [filterOpen, setFilterOpen] = useState(false);
 
   const [bookingDate, setBookingDate] = useState<string | null>(null);
   const [bookingInProgress, setBookingInProgress] = useState(false);
@@ -118,7 +119,7 @@ const Experts: React.FC<ExpertsProps> = ({ onBack, isLoggedIn, onAuthRequired })
 
   const filteredAndSortedExperts = useMemo(() => {
     let result = experts.filter(e => {
-      const matchCat = activeCategory === 'All' || e.category === activeCategory;
+      const matchCat = activeCategories.length === 0 || activeCategories.includes(e.category);
       const matchSearch = e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         e.specialties.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchCat && matchSearch;
@@ -128,7 +129,7 @@ const Experts: React.FC<ExpertsProps> = ({ onBack, isLoggedIn, onAuthRequired })
     else if (sortBy === 'experience') result.sort((a, b) => b.experience - a.experience);
 
     return result;
-  }, [experts, activeCategory, searchQuery, sortBy]);
+  }, [experts, activeCategories, searchQuery, sortBy]);
 
   const selectedExpert = useMemo(() => experts.find(e => e.id === selectedExpertId), [experts, selectedExpertId]);
 
@@ -726,24 +727,72 @@ const Experts: React.FC<ExpertsProps> = ({ onBack, isLoggedIn, onAuthRequired })
         </div>
       </header>
 
-      {/* Search & Categories */}
-      <div className="bg-white dark:bg-card-dark border-4 border-black p-6 rounded-[3rem] shadow-brutalist mb-20 space-y-6">
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex-grow relative h-16">
-            <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-black/20 text-2xl">search</span>
+      {/* Search & Filters */}
+      <div className="bg-white dark:bg-card-dark border-4 border-black p-6 rounded-[3rem] shadow-brutalist mb-20">
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-grow relative h-14">
+            <span className="material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-black/20 text-xl">search</span>
             <input
               type="text"
               placeholder="Search for Specialists, Expertise or Keywords..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-full bg-aura-cream border-2 border-black rounded-2xl pl-16 pr-6 font-bold text-sm focus:border-primary transition-all"
+              className="w-full h-full bg-aura-cream border-2 border-black rounded-2xl pl-14 pr-6 font-bold text-sm focus:border-primary transition-all"
             />
           </div>
-          <div className="flex gap-4 h-16">
+          <div className="flex gap-3 h-14">
+            <div className="relative">
+              <button
+                onClick={() => setFilterOpen(!filterOpen)}
+                className={`h-full px-6 border-2 border-black rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-brutalist-sm transition-all flex items-center gap-2 ${
+                  activeCategories.length > 0 ? 'bg-primary text-white' : 'bg-white hover:bg-aura-cream'
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm">filter_list</span>
+                Speciality {activeCategories.length > 0 && `(${activeCategories.length})`}
+                <span className="material-symbols-outlined text-sm">{filterOpen ? 'expand_less' : 'expand_more'}</span>
+              </button>
+              {filterOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setFilterOpen(false)} />
+                  <div className="absolute top-full left-0 mt-2 w-72 max-h-80 overflow-y-auto bg-white dark:bg-card-dark border-2 border-black rounded-2xl shadow-brutalist z-50 p-3">
+                    <button
+                      onClick={() => setActiveCategories([])}
+                      className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all mb-1 ${
+                        activeCategories.length === 0 ? 'bg-black text-white' : 'hover:bg-aura-cream'
+                      }`}
+                    >
+                      All Specialities
+                    </button>
+                    {categories.filter(c => c !== 'All').map(cat => {
+                      const isActive = activeCategories.includes(cat);
+                      return (
+                        <button
+                          key={cat}
+                          onClick={() => {
+                            setActiveCategories(prev =>
+                              isActive ? prev.filter(c => c !== cat) : [...prev, cat]
+                            );
+                          }}
+                          className={`w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold tracking-wide transition-all flex items-center gap-2 ${
+                            isActive ? 'bg-primary/10 text-primary' : 'hover:bg-aura-cream'
+                          }`}
+                        >
+                          <span className="material-symbols-outlined text-sm">
+                            {isActive ? 'check_box' : 'check_box_outline_blank'}
+                          </span>
+                          {cat}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
+            </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as any)}
-              className="px-8 bg-white border-2 border-black rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-brutalist-sm focus:border-primary"
+              className="px-6 bg-white border-2 border-black rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-brutalist-sm focus:border-primary"
             >
               <option value="default">Sort: Default</option>
               <option value="rating">Sort: Top Rated</option>
@@ -751,17 +800,24 @@ const Experts: React.FC<ExpertsProps> = ({ onBack, isLoggedIn, onAuthRequired })
             </select>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2 pt-6 border-t-2 border-black/5">
-          {categories.map(cat => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-8 py-4 rounded-2xl border-2 font-bold text-[10px] uppercase tracking-widest transition-all ${activeCategory === cat ? 'bg-black text-white border-black shadow-retro scale-105' : 'bg-white border-black/5 hover:border-black'}`}
-            >
-              {cat}
+        {activeCategories.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-black/5">
+            {activeCategories.map(cat => (
+              <span
+                key={cat}
+                className="inline-flex items-center gap-1 px-4 py-2 bg-primary/10 text-primary border border-primary/20 rounded-xl text-[10px] font-bold uppercase tracking-widest"
+              >
+                {cat}
+                <button onClick={() => setActiveCategories(prev => prev.filter(c => c !== cat))} className="hover:text-red-500 transition-colors">
+                  <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>close</span>
+                </button>
+              </span>
+            ))}
+            <button onClick={() => setActiveCategories([])} className="text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-red-500 px-3 py-2 transition-colors">
+              Clear all
             </button>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">

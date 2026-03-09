@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { authService } from './auth';
 
-const BASE = 'http://localhost:5000/api/wellness';
+const BASE = 'http://localhost:5001/api/wellness';
 
 const authHeaders = () => ({
     headers: { Authorization: `Bearer ${authService.getToken()}` }

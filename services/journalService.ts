@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { authService } from './auth';
 
-const API_URL = 'http://localhost:5000/api/journal';
+const API_URL = 'http://localhost:5001/api/journal';
 
 const headers = () => ({
     headers: { 'Authorization': `Bearer ${authService.getToken()}` }

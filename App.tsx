@@ -33,6 +33,8 @@ import ConsultationNotes from './views/ConsultationNotes';
 import AvailabilitySlots from './views/AvailabilitySlots';
 import PatientIntakeReview from './views/PatientIntakeReview';
 import DoctorReports from './views/DoctorReports';
+import MoodForm from './views/MoodForm';
+import BookingPage from './views/BookingPage';
 
 const BackgroundAtmosphere: React.FC = () => {
   const elements = useMemo(() => {
@@ -221,7 +223,9 @@ const App: React.FC = () => {
     AppView.CONSULTATION_NOTES,
     AppView.AVAILABILITY_SLOTS,
     AppView.PATIENT_INTAKE_REVIEW,
-    AppView.DOCTOR_REPORTS
+    AppView.DOCTOR_REPORTS,
+    AppView.MOOD_MANAGEMENT,
+    AppView.BOOKING_PAGE
   ].includes(currentView);
 
   const renderView = () => {
@@ -328,6 +332,10 @@ const App: React.FC = () => {
         return <PatientIntakeReview onBack={() => handleNavigate(AppView.DOCTOR_DASHBOARD)} />;
       case AppView.DOCTOR_REPORTS:
         return <DoctorReports onBack={() => handleNavigate(AppView.DOCTOR_DASHBOARD)} />;
+      case AppView.MOOD_MANAGEMENT:
+        return <MoodForm />;
+      case AppView.BOOKING_PAGE:
+        return <BookingPage />;
       case AppView.LOGIN:
         return <Login onNavigate={handleNavigate} onLogin={handleLogin} />;
       case AppView.SIGNUP:
@@ -355,7 +363,7 @@ const App: React.FC = () => {
       {!hideAtmosphere && <BackgroundAtmosphere />}
       <Navbar currentView={currentView} onNavigate={handleNavigate} isLoggedIn={isLoggedIn} userRole={userProfile?.role} />
 
-      <main className="flex-grow relative z-10">
+      <main className="flex-grow relative z-10 pt-20">
         {renderView()}
 
         {!isLoggedIn && isProtectedView && (
@@ -368,7 +376,7 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {isLoggedIn && !isAuthView && currentView !== AppView.LANDING && userProfile?.role !== 'doctor' && (
+      {isLoggedIn && !isAuthView && currentView !== AppView.LANDING && currentView !== AppView.CHAT && userProfile?.role !== 'doctor' && (
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] w-[92%] max-w-lg">
           <div className="bg-black border-4 border-black p-1.5 rounded-[2.5rem] shadow-brutalist flex items-stretch gap-1.5 h-20 overflow-hidden">
             {/* Standard Tools Group */}
@@ -391,12 +399,18 @@ const App: React.FC = () => {
               <button onClick={() => handleNavigate(AppView.USER_PROFILE)} title="My Profile" className={navIconClass(AppView.USER_PROFILE)}>
                 <span className="material-symbols-outlined text-xl">manage_accounts</span>
               </button>
+              <button onClick={() => handleNavigate(AppView.MOOD_MANAGEMENT)} title="Mood Manager" className={navIconClass(AppView.MOOD_MANAGEMENT)}>
+                <span className="material-icons-outlined text-xl">mood</span>
+              </button>
+              <button onClick={() => handleNavigate(AppView.BOOKING_PAGE)} title="Book Consultation" className={navIconClass(AppView.BOOKING_PAGE)}>
+                <span className="material-icons-outlined text-xl">calendar_month</span>
+              </button>
             </div>
 
             {/* Specialist Highlight Block */}
             <button
               onClick={() => handleNavigate(AppView.EXPERTS)}
-              title="Aura Specialists"
+              title="Aurova Specialists"
               className={`flex-[0.6] min-w-[90px] bg-primary text-white rounded-[1.8rem] border-2 border-black flex items-center justify-center gap-2 shadow-brutalist-sm hover:translate-y-[-2px] transition-all group overflow-hidden ${currentView === AppView.EXPERTS ? 'brightness-110' : ''}`}
             >
               <span className="material-symbols-outlined text-2xl font-black group-hover:rotate-12 transition-transform">stethoscope</span>

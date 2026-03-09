@@ -467,7 +467,7 @@ const WellnessHub: React.FC<WellnessHubProps> = ({ onBack, isLoggedIn, onNavigat
               <p className="text-xl leading-relaxed text-gray-800 dark:text-gray-200">{activeBook.summary}</p>
             </section>
             <section className="space-y-6">
-              <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Key Aura Takeaways</h4>
+              <h4 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2">Key Aurova Takeaways</h4>
               <ul className="space-y-6">
                 {activeBook.takeaways.map((point, idx) => (
                   <li key={idx} className="flex gap-4 items-start bg-aura-cream dark:bg-white/5 p-6 rounded-2xl border border-black/5">
@@ -585,7 +585,7 @@ const WellnessHub: React.FC<WellnessHubProps> = ({ onBack, isLoggedIn, onNavigat
           </div>
           <div className="mt-10 reveal-hub reveal bg-aura-black p-10 rounded-[3rem] border-2 border-primary/30 flex flex-col md:flex-row items-center gap-10 overflow-hidden relative group">
             <div className="relative z-10">
-              <h4 className="text-3xl font-display font-bold text-white mb-2">Aura Recommended</h4>
+              <h4 className="text-3xl font-display font-bold text-white mb-2">Aurova Recommended</h4>
               <p className="text-gray-400 mb-8 italic">Based on your mood, try the 3-minute breathing space \u2014 a quick reset anywhere.</p>
               <button onClick={() => handleStartRoutine(yogaRoutines.find(r => r.title === 'Three-Minute Breathing Space') || yogaRoutines[0])}
                 className="px-10 py-4 bg-primary text-white border-2 border-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-retro-white">

@@ -217,7 +217,7 @@ const Dashboard: React.FC<DashboardProps> = ({ journals, onNavigate, isLoggedIn 
       <header className="reveal-on-load reveal mb-16 flex flex-col md:flex-row md:items-end justify-between gap-8 relative z-10">
         <div className="max-w-2xl">
           <h1 className="text-6xl font-display font-bold text-black dark:text-white leading-tight mb-4">
-            Welcome home, <br /><span className="italic text-primary">Aura Soul.</span>
+            Welcome home, <br /><span className="italic text-primary">Aurova Soul.</span>
           </h1>
           <div className="inline-flex items-center gap-3 bg-white dark:bg-card-dark border-2 border-black p-5 rounded-2xl shadow-retro transform -rotate-1 hover:rotate-0 transition-transform cursor-default">
             <span className="material-symbols-outlined text-secondary font-bold">format_quote</span>

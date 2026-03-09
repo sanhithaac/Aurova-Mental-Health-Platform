@@ -29,3 +29,5 @@ dist-ssr
 server/firebase-service-account.json
 server/.env
 
+
+server/serviceAccountKey.json

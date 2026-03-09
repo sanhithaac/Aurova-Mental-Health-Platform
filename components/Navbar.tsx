@@ -32,10 +32,10 @@ const Navbar: React.FC<NavbarProps> = ({ currentView, onNavigate, isLoggedIn, us
             className="flex items-center gap-2 cursor-pointer group"
             onClick={() => onNavigate(AppView.LANDING)}
           >
-            <div className="bg-primary text-white w-8 h-8 flex items-center justify-center rounded-full border-2 border-black">
-              <span className="material-symbols-outlined text-lg font-bold">spa</span>
+            <div className="bg-primary text-white w-12 h-12 flex items-center justify-center rounded-full border-2 border-black">
+              <span className="material-symbols-outlined text-2xl font-bold">spa</span>
             </div>
-            <span className="text-2xl font-display font-bold text-black dark:text-white tracking-tight group-hover:text-primary transition-colors">aura</span>
+            <span className="text-3xl font-display font-bold text-black dark:text-white tracking-tight group-hover:text-primary transition-colors">Aurova</span>
           </div>
 
           <div className="hidden md:flex space-x-10 items-center">

@@ -116,7 +116,7 @@ const Reports: React.FC<ReportsProps> = ({ journals, onBack, isLoggedIn, onAuthR
 
       <div className="bg-white dark:bg-card-dark p-10 border-2 border-black rounded-[4rem] shadow-brutalist relative overflow-hidden">
         <div className="relative z-10">
-          <h3 className="text-3xl font-display font-bold mb-8 dark:text-white">The Aura Summary</h3>
+          <h3 className="text-3xl font-display font-bold mb-8 dark:text-white">The Aurova Summary</h3>
           <div className="prose dark:prose-invert max-w-none">
             {journals.length > 0 ? (
               <div className="space-y-8">

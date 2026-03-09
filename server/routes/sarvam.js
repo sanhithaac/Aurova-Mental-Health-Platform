@@ -22,8 +22,10 @@ router.post('/stt', upload.single('file'), async(req, res) => {
             filename: req.file.originalname || 'audio.wav',
             contentType: req.file.mimetype || 'audio/wav',
         });
-        form.append('model', process.env.SARVAM_STT_MODEL || 'saaras:v3');
+        form.append('model', process.env.SARVAM_STT_MODEL || 'saaras:v2');
         form.append('language_code', req.body.language_code || 'en-IN');
+
+        console.log('Sarvam STT request:', { language: req.body.language_code || 'en-IN', model: process.env.SARVAM_STT_MODEL || 'saaras:v2' });
 
         const response = await axios.post(`${SARVAM_BASE}/speech-to-text`, form, {
             headers: {
@@ -36,8 +38,11 @@ router.post('/stt', upload.single('file'), async(req, res) => {
         const transcript = (response.data && response.data.transcript) || (response.data && response.data.text) || '';
         res.json({ transcript });
     } catch (err) {
-        console.error('Sarvam STT error:', (err.response && err.response.data) || err.message);
-        res.status(500).json({ error: (err.response && err.response.data && err.response.data.message) || 'Sarvam STT failed.' });
+        const errData = err.response && err.response.data;
+        console.error('Sarvam STT error:', errData || err.message);
+        res.status(err.response?.status || 500).json({
+            error: (errData && (errData.message || errData.error || JSON.stringify(errData))) || 'Sarvam STT failed.',
+        });
     }
 });
 
@@ -54,9 +59,11 @@ router.post('/tts', async(req, res) => {
         const payload = {
             inputs: [text.slice(0, 500)],
             target_language_code: language || process.env.SARVAM_TTS_LANG || 'en-IN',
-            speaker: speaker || process.env.SARVAM_TTS_SPEAKER || 'shubh',
-            model: process.env.SARVAM_TTS_MODEL || 'bulbul:v3',
+            speaker: speaker || process.env.SARVAM_TTS_SPEAKER || 'anushka',
+            model: process.env.SARVAM_TTS_MODEL || 'bulbul:v2',
         };
+
+        console.log('Sarvam TTS request:', { language: payload.target_language_code, speaker: payload.speaker, model: payload.model, textLen: text.length });
 
         const response = await axios.post(`${SARVAM_BASE}/text-to-speech`, payload, {
             headers: {
@@ -69,10 +76,17 @@ router.post('/tts', async(req, res) => {
         // Sarvam returns { audios: [ "<base64 wav>" ] }
         const audios = (response.data && response.data.audios) || (response.data && response.data.audio);
         const audioBase64 = Array.isArray(audios) ? audios[0] : audios;
+        if (!audioBase64) {
+            console.error('Sarvam TTS returned empty audio:', response.data);
+            return res.status(500).json({ error: 'Sarvam returned empty audio data.' });
+        }
         res.json({ audio_base64: audioBase64, content_type: 'audio/wav' });
     } catch (err) {
-        console.error('Sarvam TTS error:', (err.response && err.response.data) || err.message);
-        res.status(500).json({ error: (err.response && err.response.data && err.response.data.message) || 'Sarvam TTS failed.' });
+        const errData = err.response && err.response.data;
+        console.error('Sarvam TTS error:', errData || err.message);
+        res.status(err.response?.status || 500).json({
+            error: (errData && (errData.message || errData.error || JSON.stringify(errData))) || 'Sarvam TTS failed.',
+        });
     }
 });
 

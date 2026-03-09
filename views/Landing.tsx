@@ -37,7 +37,7 @@ const Landing: React.FC<LandingProps> = ({ onStart, onNavigate }) => {
   return (
     <div className="bg-aura-cream dark:bg-background-dark overflow-x-hidden">
       {/* Hero Header */}
-      <header className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 flex flex-col items-center text-center">
+      <header className="relative pt-24 pb-20 lg:pt-28 lg:pb-32 flex flex-col items-center text-center">
         {/* Animated Background Ornaments */}
         <div className="absolute top-32 left-10 lg:left-32 animate-float opacity-30">
           <svg className="text-primary" fill="currentColor" height="60" viewBox="0 0 24 24" width="60">
@@ -67,9 +67,32 @@ const Landing: React.FC<LandingProps> = ({ onStart, onNavigate }) => {
           </div>
         </h1>
 
-        <p className="reveal text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed px-4 [transition-delay:400ms]">
+        <p className="reveal text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed px-4 [transition-delay:400ms]">
           A safe, private, and stigma-free space for your emotional well-being. Built for real life, real struggles, and real healing.
         </p>
+
+        {/* Audience pills — see who it's for at a glance */}
+        <p className="reveal text-xl md:text-2xl font-hand text-primary mb-3 [transition-delay:480ms]">
+          Find your lost self, right here.
+        </p>
+        <div className="reveal flex flex-wrap justify-center gap-3 mb-12 px-4 [transition-delay:500ms]">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-card-blue border-2 border-black rounded-full shadow-brutalist-sm hover:-translate-y-1 transition-all cursor-default">
+            <span className="material-symbols-outlined text-xl text-black">self_care</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-black">For Women</span>
+          </div>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-card-yellow border-2 border-black rounded-full shadow-brutalist-sm hover:-translate-y-1 transition-all cursor-default">
+            <span className="material-symbols-outlined text-xl text-black">rocket_launch</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-black">For Youth</span>
+          </div>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-card-orange border-2 border-black rounded-full shadow-brutalist-sm hover:-translate-y-1 transition-all cursor-default">
+            <span className="material-symbols-outlined text-xl text-black">diversity_3</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-black">For Everyone</span>
+          </div>
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-black rounded-full shadow-brutalist-sm hover:-translate-y-1 transition-all cursor-default">
+            <span className="material-symbols-outlined text-xl text-blue-600">stethoscope</span>
+            <span className="text-[11px] font-bold uppercase tracking-widest text-black">For Doctors</span>
+          </div>
+        </div>
 
         <div className="reveal flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center w-full px-4 [transition-delay:600ms]">
           <button 
@@ -216,13 +239,13 @@ const Landing: React.FC<LandingProps> = ({ onStart, onNavigate }) => {
            <div className="reveal flex flex-col md:flex-row items-center justify-between gap-12 bg-aura-black p-12 rounded-[3rem] border-2 border-primary/30 shadow-2xl">
               <div className="flex-grow">
                 <h3 className="text-4xl md:text-5xl font-display font-bold text-white mb-4 italic">Still not sure where to start?</h3>
-                <p className="text-gray-400 text-lg">Take our 2-minute "Aura Check" to find the right path for your current needs.</p>
+                <p className="text-gray-400 text-lg">Take our 2-minute "Aurova Check" to find the right path for your current needs.</p>
               </div>
               <button 
                 onClick={onStart}
                 className="shrink-0 px-10 py-5 bg-primary text-white font-bold rounded-2xl border-2 border-white shadow-retro-white hover:scale-105 transition-all text-xl"
               >
-                Take the Aura Check
+                Take the Aurova Check
               </button>
            </div>
         </div>
@@ -314,10 +337,10 @@ const Landing: React.FC<LandingProps> = ({ onStart, onNavigate }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="flex items-center gap-3">
-               <div className="bg-primary text-white w-10 h-10 flex items-center justify-center rounded-full border-2 border-white">
-                <span className="material-symbols-outlined text-xl font-bold">spa</span>
+               <div className="bg-primary text-white w-12 h-12 flex items-center justify-center rounded-full border-2 border-white">
+                <span className="material-symbols-outlined text-2xl font-bold">spa</span>
               </div>
-              <span className="text-3xl font-display font-bold text-white tracking-tight">aura</span>
+              <span className="text-4xl font-display font-bold text-white tracking-tight">Aurova</span>
             </div>
             <div className="flex gap-8 text-gray-500 font-bold text-xs uppercase tracking-widest">
                 <a href="#" className="hover:text-primary transition-colors">Privacy</a>
@@ -327,7 +350,7 @@ const Landing: React.FC<LandingProps> = ({ onStart, onNavigate }) => {
             </div>
           </div>
           <div className="border-t border-gray-800 mt-16 pt-8 text-center">
-            <p className="text-gray-600 text-sm">© 2024 Aura Mental Wellness by TENAWell. All rights reserved.</p>
+            <p className="text-gray-600 text-sm">© 2024 Aurova Mental Wellness by TENAWell. All rights reserved.</p>
           </div>
         </div>
       </footer>

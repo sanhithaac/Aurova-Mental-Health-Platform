@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { authService } from './auth';
 
-const API_URL = 'http://localhost:5000/api/chat';
+const API_URL = 'http://localhost:5001/api/chat';
 
 export const chatService = {
     async sendMessage(text: string, sessionId: string, frontendContext?: string, language?: string) {

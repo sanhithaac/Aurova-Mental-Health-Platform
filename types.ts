@@ -32,7 +32,9 @@ export enum AppView {
   MOOD_TRACKER = 'mood_tracker',
   BREATHWORK_LOG = 'breathwork_log',
   ROUTINE_PROGRESS = 'routine_progress',
-  SOULFEED_INTERACT = 'soulfeed_interact'
+  SOULFEED_INTERACT = 'soulfeed_interact',
+  MOOD_MANAGEMENT = 'mood_management',
+  BOOKING_PAGE = 'booking_page'
 }
 
 export interface JournalEntry {

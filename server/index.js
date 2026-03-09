@@ -10,6 +10,7 @@ const profileRoutes = require('./routes/profile');
 const wellnessRoutes = require('./routes/wellness');
 const bookingRoutes = require('./routes/booking');
 const sarvamRoutes = require('./routes/sarvam');
+const moodRoutes = require('./routes/moodRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -33,6 +34,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/wellness', wellnessRoutes);
 app.use('/api/booking', bookingRoutes);
 app.use('/api/sarvam', sarvamRoutes);
+app.use('/api/moods', moodRoutes);
 
 // Health Check
 app.get('/health', (req, res) => {
