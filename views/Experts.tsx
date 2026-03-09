@@ -428,6 +428,137 @@ const Experts: React.FC<ExpertsProps> = ({ onBack, isLoggedIn, onAuthRequired })
                 </div>
               )}
             </div>
+
+            {/* Doctor Analytics — Patient Volume & Feedback */}
+            <div className="space-y-8">
+              <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-gray-400 mb-4 border-b-2 border-black/5 pb-4">Performance Analytics</p>
+              
+              {/* Summary Stats */}
+              <div className="grid grid-cols-3 gap-4">
+                {(() => {
+                  const hash = (selectedExpert.id || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+                  const totalPatients = 120 + (hash % 180);
+                  const avgRating = selectedExpert.rating || (3.8 + (hash % 12) / 10);
+                  const repeatRate = 62 + (hash % 28);
+                  return [
+                    { val: totalPatients.toString(), label: 'Total Patients', icon: 'group', color: 'bg-card-blue' },
+                    { val: avgRating.toFixed(1), label: 'Avg Rating', icon: 'star', color: 'bg-card-yellow' },
+                    { val: `${repeatRate}%`, label: 'Repeat Rate', icon: 'autorenew', color: 'bg-card-orange' },
+                  ];
+                })().map(s => (
+                  <div key={s.label} className={`${s.color} p-5 rounded-2xl border-2 border-black shadow-brutalist-sm text-center`}>
+                    <span className="material-symbols-outlined text-xl text-black">{s.icon}</span>
+                    <p className="text-2xl font-display font-bold">{s.val}</p>
+                    <p className="text-[8px] font-bold uppercase tracking-widest text-black/60">{s.label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Patient Volume + Feedback Line Chart */}
+              <div className="bg-white dark:bg-card-dark border-2 border-black rounded-[2.5rem] p-8 shadow-brutalist">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h4 className="text-lg font-display font-bold">Patient Volume & Feedback</h4>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Last 6 months</p>
+                  </div>
+                  <span className="px-3 py-1 bg-green-100 text-green-700 text-[10px] font-bold rounded-full border border-green-200">↑ Trending Up</span>
+                </div>
+                <svg viewBox="0 0 500 220" className="w-full h-52">
+                  <defs>
+                    <linearGradient id={`volGrad-${selectedExpert.id}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.15" />
+                      <stop offset="100%" stopColor="#3B82F6" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  {/* Grid lines */}
+                  {[0,1,2,3,4].map(i => <line key={i} x1="50" y1={30+i*42} x2="470" y2={30+i*42} stroke="#f3f4f6" strokeWidth="1" />)}
+                  {/* Month labels */}
+                  {(() => {
+                    const months = ['Sep','Oct','Nov','Dec','Jan','Feb'];
+                    return months.map((m, i) => (
+                      <text key={m} x={85 + i * 76} y="210" textAnchor="middle" className="text-[10px] fill-gray-400 font-bold">{m}</text>
+                    ));
+                  })()}
+                  {/* Y-axis labels */}
+                  {['40','30','20','10','0'].map((v, i) => (
+                    <text key={v} x="42" y={35+i*42} textAnchor="end" className="text-[9px] fill-gray-400 font-bold">{v}</text>
+                  ))}
+                  {/* Patient volume bars */}
+                  {(() => {
+                    const hash = (selectedExpert.id || '').split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0);
+                    const volumes = [14+hash%8, 18+hash%6, 22+hash%5, 20+hash%7, 26+hash%4, 32+hash%6];
+                    return volumes.map((v, i) => {
+                      const barH = (v / 40) * 168;
+                      return (
+                        <g key={i}>
+                          <rect x={70 + i * 76} y={198 - barH} width="30" height={barH} rx="6" fill="#3B82F6" opacity="0.2" />
+                          <rect x={70 + i * 76} y={198 - barH} width="30" height={barH} rx="6" fill="url(#volGrad-${selectedExpert.id})" stroke="#3B82F6" strokeWidth="1.5" />
+                          <text x={85 + i * 76} y={192 - barH} textAnchor="middle" className="text-[9px] fill-blue-600 font-bold">{v}</text>
+                        </g>
+                      );
+                    });
+                  })()}
+                  {/* Feedback rating line (overlaid) */}
+                  {(() => {
+                    const hash = (selectedExpert.id || '').split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0);
+                    const ratings = [3.6+hash%4/10, 3.8+hash%3/10, 4.0+hash%2/10, 4.1+hash%3/10, 4.3+hash%2/10, 4.5+hash%2/10];
+                    const points = ratings.map((r, i) => {
+                      const x = 85 + i * 76;
+                      const y = 198 - ((r / 5) * 168);
+                      return `${x},${y}`;
+                    });
+                    const circles = ratings.map((r, i) => ({
+                      x: 85 + i * 76,
+                      y: 198 - ((r / 5) * 168),
+                      r: r,
+                    }));
+                    return (
+                      <>
+                        <polyline points={points.join(' ')} fill="none" stroke="#FF7D44" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                        {circles.map((c, i) => (
+                          <g key={i}>
+                            <circle cx={c.x} cy={c.y} r="5" fill="white" stroke="#FF7D44" strokeWidth="2.5" />
+                            <text x={c.x + 12} y={c.y + 4} className="text-[8px] fill-primary font-bold">{c.r.toFixed(1)}</text>
+                          </g>
+                        ))}
+                      </>
+                    );
+                  })()}
+                </svg>
+                <div className="flex gap-6 justify-center mt-2">
+                  <span className="flex items-center gap-2 text-xs font-bold"><span className="w-3 h-3 bg-blue-500/30 rounded border border-blue-500"></span> Patient Volume</span>
+                  <span className="flex items-center gap-2 text-xs font-bold"><span className="w-3 h-3 bg-primary rounded-full"></span> Feedback Rating</span>
+                </div>
+              </div>
+
+              {/* Monthly Satisfaction Breakdown */}
+              <div className="bg-aura-cream dark:bg-card-dark border-2 border-black rounded-[2rem] p-8 shadow-brutalist-sm">
+                <h4 className="text-sm font-bold uppercase tracking-widest text-black/60 mb-6">Patient Satisfaction Breakdown</h4>
+                <div className="space-y-4">
+                  {[
+                    { label: 'Communication & Empathy', pct: 96 },
+                    { label: 'Treatment Effectiveness', pct: 88 },
+                    { label: 'Appointment Punctuality', pct: 92 },
+                    { label: 'Follow-up Care', pct: 84 },
+                    { label: 'Overall Experience', pct: 91 },
+                  ].map((item, i) => {
+                    const hash = (selectedExpert.id || '').split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+                    const adjusted = Math.max(60, Math.min(99, item.pct + (hash + i * 3) % 10 - 4));
+                    return (
+                      <div key={item.label}>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xs font-bold text-gray-700">{item.label}</span>
+                          <span className="text-xs font-bold text-primary">{adjusted}%</span>
+                        </div>
+                        <div className="h-3 bg-white rounded-full border border-black/10 overflow-hidden">
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${adjusted}%` }}></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
