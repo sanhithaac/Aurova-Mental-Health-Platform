@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5001/api/auth';
-
+// Use environment variable for API base URL
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+const API_URL = `${API_BASE}/api/auth`;
 export const authService = {
     async signup(email, password, displayName, role, extraData = {}) {
         console.log('[AuthService] Signup called with:', { email, displayName, role });
