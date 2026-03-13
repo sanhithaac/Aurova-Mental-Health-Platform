@@ -371,9 +371,12 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col relative">
       {!hideAtmosphere && <BackgroundAtmosphere />}
-      <Navbar currentView={currentView} onNavigate={handleNavigate} isLoggedIn={isLoggedIn} userRole={userProfile?.role} />
+      {/* Hide Navbar in Chat view */}
+      {currentView !== AppView.CHAT && (
+        <Navbar currentView={currentView} onNavigate={handleNavigate} isLoggedIn={isLoggedIn} userRole={userProfile?.role} />
+      )}
 
-      <main className="flex-grow relative z-10 pt-20">
+      <main className={`flex-grow relative z-10 ${currentView !== AppView.CHAT ? 'pt-20' : ''}`}>
         {renderView()}
 
         {!isLoggedIn && isProtectedView && (
@@ -386,8 +389,9 @@ const App: React.FC = () => {
         )}
       </main>
 
+      {/* Standard bottom navbar for all except Chat and Landing */}
       {isLoggedIn && !isAuthView && currentView !== AppView.LANDING && currentView !== AppView.CHAT && userProfile?.role !== 'doctor' && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] w-[92%] max-w-lg">
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[70] w-[98%] max-w-2xl">
           <div className="bg-black border-4 border-black p-1.5 rounded-[2.5rem] shadow-brutalist flex items-stretch gap-1.5 h-20 overflow-hidden">
             {/* Standard Tools Group */}
             <div className="bg-white dark:bg-card-dark flex-grow rounded-[2rem] flex items-center justify-around px-2 border-2 border-black/10">
@@ -415,9 +419,6 @@ const App: React.FC = () => {
               <button onClick={() => handleNavigate(AppView.PATIENT_MOOD_FORM)} title="Mood Assessment" className={navIconClass(AppView.PATIENT_MOOD_FORM)}>
                 <span className="material-symbols-outlined text-xl">monitor_heart</span>
               </button>
-              <button onClick={() => handleNavigate(AppView.BOOKING_PAGE)} title="Book Consultation" className={navIconClass(AppView.BOOKING_PAGE)}>
-                <span className="material-icons-outlined text-xl">calendar_month</span>
-              </button>
             </div>
 
             {/* Specialist Highlight Block */}
@@ -439,6 +440,46 @@ const App: React.FC = () => {
             >
               <span className="material-symbols-outlined text-xl">psychology_alt</span>
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Floating bottom-right navbar button in Chat view */}
+      {isLoggedIn && currentView === AppView.CHAT && (
+        <div className="fixed bottom-8 right-8 z-[80]">
+          <div className="group">
+            <button className="bg-primary text-white rounded-full p-4 shadow-brutalist border-4 border-black text-2xl flex items-center justify-center group-hover:scale-110 transition-all">
+              <span className="material-symbols-outlined">menu</span>
+            </button>
+            <div className="hidden group-hover:flex flex-col gap-2 mt-4 bg-white border-2 border-black rounded-2xl p-3 shadow-brutalist absolute bottom-16 right-0">
+              <button onClick={() => handleNavigate(AppView.JOURNAL)} title="Journal" className={navIconClass(AppView.JOURNAL)}>
+                <span className="material-icons-outlined text-xl">edit_note</span>
+              </button>
+              <button onClick={() => handleNavigate(AppView.DASHBOARD)} title="Home" className={navIconClass(AppView.DASHBOARD)}>
+                <span className="material-icons-outlined text-xl">grid_view</span>
+              </button>
+              <button onClick={() => handleNavigate(AppView.SOUL_FEED)} title="Soul Feed" className={navIconClass(AppView.SOUL_FEED)}>
+                <span className="material-symbols-outlined text-xl font-bold">play_circle</span>
+              </button>
+              <button onClick={() => handleNavigate(AppView.COMMUNITY)} title="Community" className={navIconClass(AppView.COMMUNITY)}>
+                <span className="material-icons-outlined text-xl">groups</span>
+              </button>
+              <button onClick={() => handleNavigate(AppView.USER_PROFILE)} title="My Profile" className={navIconClass(AppView.USER_PROFILE)}>
+                <span className="material-symbols-outlined text-xl">manage_accounts</span>
+              </button>
+              <button onClick={() => handleNavigate(AppView.MOOD_MANAGEMENT)} title="Mood Manager" className={navIconClass(AppView.MOOD_MANAGEMENT)}>
+                <span className="material-icons-outlined text-xl">mood</span>
+              </button>
+              <button onClick={() => handleNavigate(AppView.PATIENT_MOOD_FORM)} title="Mood Assessment" className={navIconClass(AppView.PATIENT_MOOD_FORM)}>
+                <span className="material-symbols-outlined text-xl">monitor_heart</span>
+              </button>
+              <button onClick={() => handleNavigate(AppView.EXPERTS)} title="Aurova Specialists" className={navIconClass(AppView.EXPERTS)}>
+                <span className="material-symbols-outlined text-xl">stethoscope</span>
+              </button>
+              <button onClick={() => handleNavigate(AppView.RESOURCES)} title="Wellness Hub" className={navIconClass(AppView.RESOURCES)}>
+                <span className="material-symbols-outlined text-xl">psychology_alt</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

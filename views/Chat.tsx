@@ -239,9 +239,16 @@ const Chat: React.FC<ChatProps> = ({ history, setHistory, onBack, isLoggedIn, on
     try {
       const data = await chatService.sendMessage(msg, sessionId, undefined, voiceLang);
       const botMsg: Message = {
-        id: `m-${Date.now()}`, role: 'model', text: data.response,
-        timestamp: new Date(), riskLevel: data.riskLevel, provider: data.provider,
-        retrievedCount: data.retrievedCount, isCrisis: data.isCrisis,
+        id: `m-${Date.now()}`,
+        role: 'model',
+        text: data.response,
+        timestamp: new Date(),
+        riskLevel: data.riskLevel,
+        provider: data.provider,
+        retrievedCount: data.retrievedCount,
+        isCrisis: data.isCrisis,
+        context: data.context,
+        entities: data.entities
       };
       setHistory(prev => [...prev, botMsg]);
       if (data.isCrisis) setShowCrisisAlert(true);
@@ -348,7 +355,7 @@ const Chat: React.FC<ChatProps> = ({ history, setHistory, onBack, isLoggedIn, on
   };
 
   return (
-    <div className="fixed inset-0 flex bg-aura-cream dark:bg-gray-950 overflow-hidden" style={{ paddingTop: '64px' }}>
+    <div className="fixed inset-0 flex bg-aura-cream dark:bg-gray-950 overflow-hidden">
       {/* Sidebar overlay mobile */}
       {sidebarOpen && (
         <div onClick={() => setSidebarOpen(false)} className="fixed inset-0 bg-black/40 z-30 md:hidden" />
@@ -401,12 +408,12 @@ const Chat: React.FC<ChatProps> = ({ history, setHistory, onBack, isLoggedIn, on
       {/* ── Main column ── */}
       <div className="flex-1 flex flex-col min-w-0 h-full">
         {/* Header */}
-        <header className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-card-dark border-b-2 border-black shrink-0">
+        <header className="flex items-center gap-3 px-4 py-3 bg-white dark:bg-card-dark border-b-2 border-black shrink-0 relative">
           <button onClick={() => setSidebarOpen(true)} className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
-            <span className="material-icons-outlined text-sm">menu</span>
+            <span className="material-symbols-outlined text-sm">menu</span>
           </button>
           <button onClick={onBack} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
-            <span className="material-icons-outlined text-sm">arrow_back</span>
+            <span className="material-symbols-outlined text-sm">arrow_back</span>
           </button>
           <div className="flex items-center gap-2.5 flex-1">
             <div className="w-9 h-9 bg-gradient-to-br from-primary to-secondary rounded-xl border-2 border-black flex items-center justify-center shadow-brutalist-sm">
@@ -419,33 +426,53 @@ const Chat: React.FC<ChatProps> = ({ history, setHistory, onBack, isLoggedIn, on
               </p>
             </div>
           </div>
-          {/* Voice language + speaker selectors */}
-          <div className="flex items-center gap-1.5 shrink-0">
-            <select
-              value={voiceLang}
-              onChange={e => handleLangChange(e.target.value)}
-              title="Voice language"
-              className="h-8 px-2 bg-aura-cream border-2 border-black rounded-lg text-[10px] font-bold tracking-wide focus:outline-none focus:border-primary cursor-pointer"
+          {/* Language/speaker selectors top right */}
+          <div className="flex items-center gap-3 absolute right-4 top-1">
+            <div className="flex items-center gap-1">
+              <span className="material-symbols-outlined text-primary" style={{ fontSize: '20px' }}>translate</span>
+              <select
+                value={voiceLang}
+                onChange={e => handleLangChange(e.target.value)}
+                title="Voice language"
+                className="h-8 px-4 bg-aura-cream border-2 border-black rounded-lg text-[16px] font-bold tracking-wide focus:outline-none focus:border-primary cursor-pointer min-w-[120px]"
+                style={{ fontSize: '16px', padding: '0.5rem 1rem' }}
+              >
+                {VOICE_LANGUAGES.map(l => (
+                  <option key={l.code} value={l.code} style={{ color: l.code === 'te-IN' ? '#3b82f6' : undefined }}>{l.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="material-symbols-outlined text-secondary" style={{ fontSize: '20px' }}>record_voice_over</span>
+              <select
+                value={voiceSpeaker}
+                onChange={e => setVoiceSpeaker(e.target.value)}
+                title="Voice speaker"
+                className="h-8 px-4 bg-aura-cream border-2 border-black rounded-lg text-[16px] font-bold focus:outline-none focus:border-primary cursor-pointer min-w-[120px]"
+                style={{ fontSize: '16px', padding: '0.5rem 1rem' }}
+              >
+                {(VOICE_SPEAKERS[voiceLang] || VOICE_SPEAKERS['en-IN']).map(s => (
+                  <option key={s.id} value={s.id}>{s.label}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              onMouseDown={startRecording} onMouseUp={stopRecording}
+              onTouchStart={startRecording} onTouchEnd={stopRecording}
+              title="Hold to record"
+              className={`p-2 border-2 border-black rounded-xl transition-all shrink-0 flex items-center justify-center
+                ${isRecording ? 'bg-red-500 text-white animate-pulse shadow-brutalist-sm scale-110' : 'bg-white text-gray-500 hover:bg-aura-cream shadow-brutalist-sm'}`}
+              style={{ width: '36px', height: '36px' }}
             >
-              {VOICE_LANGUAGES.map(l => (
-                <option key={l.code} value={l.code}>{l.label}</option>
-              ))}
-            </select>
-            <select
-              value={voiceSpeaker}
-              onChange={e => setVoiceSpeaker(e.target.value)}
-              title="Voice speaker"
-              className="h-8 px-2 bg-aura-cream border-2 border-black rounded-lg text-[10px] font-bold focus:outline-none focus:border-primary cursor-pointer"
+              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>{isRecording ? 'mic' : 'mic_none'}</span>
+            </button>
+            <button onClick={() => setAutoTTS(v => !v)} title={autoTTS ? 'Disable auto read-aloud' : 'Enable auto read-aloud'}
+              className={`p-2 border-2 border-black rounded-xl transition-all shadow-brutalist-sm flex items-center justify-center ${autoTTS ? 'bg-primary text-white' : 'bg-white text-gray-500 hover:bg-gray-50'}`}
+              style={{ width: '36px', height: '36px' }}
             >
-              {(VOICE_SPEAKERS[voiceLang] || VOICE_SPEAKERS['en-IN']).map(s => (
-                <option key={s.id} value={s.id}>{s.label}</option>
-              ))}
-            </select>
+              <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>{autoTTS ? 'volume_up' : 'volume_off'}</span>
+            </button>
           </div>
-          <button onClick={() => setAutoTTS(v => !v)} title={autoTTS ? 'Disable auto read-aloud' : 'Enable auto read-aloud'}
-            className={`p-2 rounded-xl border-2 border-black transition-all shadow-brutalist-sm ${autoTTS ? 'bg-primary text-white' : 'bg-white text-gray-500 hover:bg-gray-50'}`}>
-            <span className="material-symbols-outlined text-sm">{autoTTS ? 'volume_up' : 'volume_off'}</span>
-          </button>
         </header>
 
         {/* Crisis alert */}
@@ -543,6 +570,16 @@ const Chat: React.FC<ChatProps> = ({ history, setHistory, onBack, isLoggedIn, on
                     {(msg.retrievedCount ?? 0) > 0 && (
                       <span className="text-[9px] text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-full font-medium">
                         \ud83e\udde0 {msg.retrievedCount} memories
+                      </span>
+                    )}
+                    {msg.context && msg.context.length > 0 && (
+                      <span className="text-[9px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full font-medium">
+                        Context: {msg.context.join(', ')}
+                      </span>
+                    )}
+                    {msg.entities && msg.entities.length > 0 && (
+                      <span className="text-[9px] text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full font-medium">
+                        Entities: {msg.entities.join(', ')}
                       </span>
                     )}
                     <button onClick={() => speakText(msg.id, msg.text)}

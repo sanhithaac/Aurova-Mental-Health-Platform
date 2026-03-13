@@ -43,7 +43,13 @@ const Community: React.FC<CommunityProps> = ({ onBack, isLoggedIn, onAuthRequire
     { id: 2, name: 'Healing From Heartbreak', tag: 'Relationships', members: 8900, membersDisplay: '8.9k', color: 'bg-primary', icon: 'heart_broken', desc: 'Moving from loss to love. A safe harbor for those rediscovering their worth after an ending.', dailyFocus: 'Finding "me" after "we".' },
     { id: 3, name: 'Burnout Recovery', tag: 'Work & Life', members: 5600, membersDisplay: '5.6k', color: 'bg-card-purple', icon: 'battery_0_bar', desc: 'Recharging the soul. Professionals and students battling chronic exhaustion and finding boundaries.', dailyFocus: 'The power of saying "No" today.' },
     { id: 4, name: 'Morning Motivation', tag: 'Depression', members: 3100, membersDisplay: '3.1k', color: 'bg-secondary', icon: 'light_mode', desc: 'Just getting out of bed is a victory. Celebrate the small wins that others might miss.', dailyFocus: 'What one small thing did you do for yourself?' },
-    { id: 6, name: 'Shadow Seeker Hub', tag: 'Anonymous Therapy', members: 2400, membersDisplay: '2.4k', color: 'bg-card-blue', icon: 'visibility_off', desc: 'Total anonymity for those not ready to be seen. Healing in the silence of shared understanding.', dailyFocus: 'Open floor: What are you carrying?' }
+    { id: 6, name: 'Shadow Seeker Hub', tag: 'Anonymous Therapy', members: 2400, membersDisplay: '2.4k', color: 'bg-card-blue', icon: 'visibility_off', desc: 'Total anonymity for those not ready to be seen. Healing in the silence of shared understanding.', dailyFocus: 'Open floor: What are you carrying?' },
+    { id: 7, name: 'Grief Support', tag: 'Loss & Bereavement', members: 1800, membersDisplay: '1.8k', color: 'bg-card-yellow', icon: 'psychology_alt', desc: 'A gentle space for those processing loss and grief.', dailyFocus: 'Share a memory or tribute.' },
+    { id: 8, name: 'LGBTQ+ Safe Space', tag: 'Identity', members: 2200, membersDisplay: '2.2k', color: 'bg-card-purple', icon: 'diversity_3', desc: 'Support and affirmation for LGBTQ+ individuals and allies.', dailyFocus: 'Affirmation of the day.' },
+    { id: 9, name: 'Parenting Circle', tag: 'Family', members: 3400, membersDisplay: '3.4k', color: 'bg-card-blue', icon: 'family_restroom', desc: 'Parents supporting parents through all stages.', dailyFocus: 'Parenting tip exchange.' },
+    { id: 10, name: 'Body Positivity', tag: 'Self Image', members: 2100, membersDisplay: '2.1k', color: 'bg-card-yellow', icon: 'face_retouching_natural', desc: 'A space to celebrate all bodies and challenge negative self-talk.', dailyFocus: 'Share a positive affirmation.' },
+    { id: 11, name: 'Student Stress Relief', tag: 'Academics', members: 2700, membersDisplay: '2.7k', color: 'bg-card-blue', icon: 'school', desc: 'For students facing exam stress, deadlines, and academic anxiety.', dailyFocus: 'Today’s study tip.' },
+    { id: 12, name: 'Mindful Eating', tag: 'Nutrition', members: 1500, membersDisplay: '1.5k', color: 'bg-card-purple', icon: 'restaurant', desc: 'Support for mindful eating, food relationships, and nutrition.', dailyFocus: 'Mindful meal check-in.' }
   ];
 
   const sortedCircles = useMemo(() => {
@@ -300,7 +306,28 @@ const Community: React.FC<CommunityProps> = ({ onBack, isLoggedIn, onAuthRequire
           </div>
           <h4 className="font-display text-3xl font-bold mb-4 dark:text-white">Need a Niche?</h4>
           <p className="text-xs text-gray-500 mb-10 font-medium leading-relaxed">Is there a specific struggle you need a space for?<br/>Request a new anonymous circle.</p>
-          <button className="px-10 py-4 border-2 border-black bg-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-brutalist-sm active:translate-y-1">Request Topic</button>
+          <form onSubmit={e => {
+            e.preventDefault();
+            const value = e.target.topic.value.trim();
+            if (!value) return;
+            // Check for similar communities
+            const found = circles.find(c => c.name.toLowerCase().includes(value.toLowerCase()) || c.tag.toLowerCase().includes(value.toLowerCase()));
+            if (found) {
+              if (window.confirm(`We already have a community for this: ${found.name}. Would you like to join it?`)) {
+                setJoinedCircleIds(prev => prev.includes(found.id) ? prev : [...prev, found.id]);
+                setActiveCircleId(found.id);
+              } else {
+                alert('You can explore other communities or suggest a new one.');
+              }
+            } else {
+              alert('Thank you for your suggestion! We will look into creating this community.');
+              // Here you could store the request in backend or local storage
+            }
+            e.target.reset();
+          }} className="w-full flex flex-col items-center gap-4 mt-4">
+            <input name="topic" type="text" placeholder="Suggest a new community..." className="w-full px-4 py-3 border-2 border-black rounded-xl text-sm" />
+            <button type="submit" className="px-10 py-4 border-2 border-black bg-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-black hover:text-white transition-all shadow-brutalist-sm active:translate-y-1">Request Topic</button>
+          </form>
         </div>
       </div>
     </div>
